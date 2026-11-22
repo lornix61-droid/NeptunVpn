@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeptunVPN | Космическая скорость и безопасность</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --dark: #0a0a1a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Живой космический фон */
+        #space-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Навигация */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 26, 0.7);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        nav ul li a:hover { color: white; }
+        nav ul li a:hover::after { width: 100%; }
+
+        .nav-btn {
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.5);
+        }
+
+        /* Бегущая строка */
+        .ticker-wrap {
+            position: fixed;
+            top: 80px;
+            width: 100%;
+            overflow: hidden;
+            background: rgba(0, 210, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 99;
+            backdrop-filter: blur(5px);
+        }
+        .ticker {
+            display: inline-block;
+            white-space: nowrap;
+            padding: 10px 0;
+            animation: ticker 25s linear infinite;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* Главный экран */
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+            padding-top: 100px;
+        }
+
+        header h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        header h1 span {
+            background: linear-gradient(90deg, var(--primary), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 210, 255, 0.3);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: #aaa;
+            max-width: 600px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .cta-button {
+            padding: 18px 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+            animation: fadeInUp 1s ease-out 0.3s both;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.6);
+        }
+
+        /* Секция Возможности */
+        .features {
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            font-size: 3rem;
+            margin-bottom: 50px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .feature-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .feature-item p {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Секция тарифов */
+        .pricing {
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing h2 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .pricing > p {
+            color: #aaa;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+        }
+
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 30px;
+            width: 320px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 25px 50px rgba(0, 210, 255, 0.2);
+        }
+
+        .card.popular {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .card.popular::after {
+            content: 'ПОПУЛЯРНЫЙ';
+            position: absolute;
+            top: 20px;
+            right: -30px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            padding: 5px 40px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            transform: rotate(45deg);
+        }
+
+        .card h3 { font-size: 1.5rem; margin-bottom: 20px; color: #fff; }
+        .price { font-size: 3rem; font-weight: 800; margin-bottom: 30px; color: var(--primary); }
+        .price span { font-size: 1rem; color: #aaa; font-weight: 400; }
+        .card ul { list-style: none; text-align: left; margin-bottom: 40px; }
+        .card ul li { margin-bottom: 15px; color: #ccc; display: flex; align-items: center; gap: 10px; }
+        .card ul li::before { content: '✓'; color: var(--primary); font-weight: bold; }
+
+        .card button, .card a.btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .card button:hover, .card a.btn:hover, .card.popular a.btn {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: var(--dark);
+        }
+
+        /* Секция Поддержки */
+        .support {
+            padding: 80px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            background: rgba(0, 210, 255, 0.05);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .support h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .support p {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .support-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .support-btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            border: 1px solid var(--primary);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .support-btn:hover {
+            background: var(--primary);
+            color: var(--dark);
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        /* Подвал */
+        footer {
+            padding: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+            background: rgba(10, 10, 26, 0.9);
+        }
+
+        /* Анимация появления при скролле */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 3rem; }
+            nav ul { display: none; }
+            .pricing-cards { flex-direction: column; align-items: center; }
+            .ticker-wrap { top: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="space-canvas"></canvas>
+
+    <nav>
+        <div class="logo" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">NeptunVPN</div>
+        <ul>
+            <li><a href="#features">Возможности</a></li>
+            <li><a href="#pricing">Тарифы</a></li>
+            <li><a href="#support">Поддержка</a></li>
+        </ul>
+        <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="nav-btn">Войти в бота</a>
+    </nav>
+
+    <!-- Бегущая строка -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            🚀 NeptunVPN: Скорость света и защита космоса! • 🌌 Покупка подписки доступна только через Telegram-бота • 🔒 Военное шифрование AES-256 • 💎 Серверы в 100+ странах • ⚡ Подключайся прямо сейчас!
+        </div>
+    </div>
+
+    <header>
+        <h1>Скорость <span>Света</span>.</h1>
+        <h1>Защита <span>Космоса</span>.</h1>
+        <p>NeptunVPN — это твой личный телепорт в безопасный и свободный интернет. Без границ, без ограничений, без слежки.</p>
+        <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="cta-button">Купить подписку в Telegram</a>
+    </header>
+
+    <section class="features reveal" id="features">
+        <h2>Почему <span style="color: var(--primary);">NeptunVPN</span>?</h2>
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <h3>Скорость без границ</h3>
+                <p>Наши серверы работают на 10 Гбит/с. Смотри 4K видео и качай файлы без задержек.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🛡️</div>
+                <h3>Максимальная защита</h3>
+                <p>Шифрование AES-256. Твой интернет-трафик защищен надежнее, чем в банке.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🌍</div>
+                <h3>Серверы по всему миру</h3>
+                <p>Более 100 стран. Открывай контент, который скрыт от тебя, в один клик.</p>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">👻</div>
+                <h3>Политика No-Logs</h3>
+                <p>Мы не храним логи. Твои действия в сети остаются только твоим делом.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing reveal" id="pricing">
+        <h2>Выбери свою <span style="color: var(--primary);">орбиту</span></h2>
+        <p>Оплата и активация подписки происходят в нашем Telegram-боте.</p>
+        
+        <div class="pricing-cards">
+            <!-- Тариф 1 -->
+            <div class="card">
+                <h3>Луна</h3>
+                <div class="price">199 ₽<span>/мес</span></div>
+                <ul>
+                    <li>Скорость до 100 Мбит/с</li>
+                    <li>5 устройств</li>
+                    <li>Серверы в 10 странах</li>
+                    <li>Защита от утечек</li>
+                </ul>
+                <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="btn">Купить в боте</a>
+            </div>
+
+            <!-- Тариф 2 (Популярный) -->
+            <div class="card popular">
+                <h3>Марс</h3>
+                <div class="price">399 ₽<span>/мес</span></div>
+                <ul>
+                    <li>Безлимитная скорость</li>
+                    <li>10 устройств</li>
+                    <li>Серверы в 50 странах</li>
+                    <li>Обход блокировок</li>
+                    <li>Выделенный IP</li>
+                </ul>
+                <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="btn">Купить в боте</a>
+            </div>
+
+            <!-- Тариф 3 -->
+            <div class="card">
+                <h3>Нептун</h3>
+                <div class="price">699 ₽<span>/мес</span></div>
+                <ul>
+                    <li>Максимальный приоритет</li>
+                    <li>Неограниченно устройств</li>
+                    <li>Серверы в 100+ странах</li>
+                    <li>Двойное шифрование</li>
+                    <li>Поддержка 24/7</li>
+                </ul>
+                <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="btn">Купить в боте</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Секция Поддержки -->
+    <section class="support reveal" id="support">
+        <h2>Нужна помощь?</h2>
+        <p>Наша команда всегда на связи. Пиши нам, если возникли вопросы!</p>
+        <div class="support-links">
+            <a href="mailto:lornix61@gmail.com" class="support-btn">
+                ✉️ Написать на почту: lornix61@gmail.com
+            </a>
+            <a href="https://t.me/NeptunVpnHelperBot" target="_blank" class="support-btn">
+                💬 Написать в Telegram
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 NeptunVPN. Сделано с любовью к космосу и приватности.</p>
+    </footer>
+
+    <script>
+        // Плавное появление элементов при скролле
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 150;
+            revealElements.forEach((reveal) => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll();
+
+        // --- ЖИВОЙ КОСМОС (CANVAS) ---
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 1.5;
+                this.speed = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random();
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < 0) { this.reset(); this.y = height; }
+                this.opacity += (Math.random() - 0.5) * 0.1;
+                if (this.opacity < 0.2) this.opacity = 0.2;
+                if (this.opacity > 1) this.opacity = 1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        class Asteroid {
+            constructor() {
+                this.reset();
+                this.vertices = [];
+                for (let i = 0; i < 8; i++) this.vertices.push(Math.random() * 10 + 5);
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 15 + 5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.angle = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.02;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.angle += this.rotSpeed;
+                if (this.x < -50 || this.x > width + 50 || this.y < -50 || this.y > height + 50) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = 'rgba(100, 100, 120, 0.4)';
+                ctx.strokeStyle = 'rgba(150, 150, 170, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                for (let i = 0; i < this.vertices.length; i++) {
+                    const angle = (i / this.vertices.length) * Math.PI * 2;
+                    const rad = this.size + this.vertices[i] / 3;
+                    const px = Math.cos(angle) * rad;
+                    const py = Math.sin(angle) * rad;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        class Meteor {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * width + 200;
+                this.y = -50;
+                this.speed = Math.random() * 8 + 5;
+                this.size = Math.random() * 2 + 1;
+            }
+            update() {
+                this.x -= this.speed;
+                this.y += this.speed;
+                if (this.x < -50 || this.y > height + 50) this.reset();
+            }
+            draw() {
+                const gradient = ctx.createLinearGradient(this.x, this.y, this.x + 50, this.y - 50);
+                gradient.addColorStop(0, 'rgba(0, 210, 255, 0.8)');
+                gradient.addColorStop(1, 'rgba(0, 210, 255, 0)');
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = this.size;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x + 50, this.y - 50);
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        const stars = Array.from({ length: 150 }, () => new Star());
+        const asteroids = Array.from({ length: 10 }, () => new Asteroid());
+        const meteors = Array.from({ length: 3 }, () => new Meteor());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            const grad = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width);
+            grad.addColorStop(0, 'rgba(20, 20, 40, 0.5)');
+            grad.addColorStop(1, 'rgba(10, 10, 26, 0.5)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+
+            stars.forEach(s => { s.update(); s.draw(); });
+            asteroids.forEach(a => { a.update(); a.draw(); });
+            meteors.forEach(m => { m.update(); m.draw(); });
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
