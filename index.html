@@ -1,8 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NeptunVPN — быстрый VPN. Покупка и активация подписки через Telegram-бота.">
+<title>NeptunVPN | Космическая скорость и безопасность</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#00d2ff;--secondary:#3a7bd5;--dark:#0a0a1a;--glass:rgba(255,255,255,.05);--glass-border:rgba(255,255,255,.1);--nav-h:72px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
+body{background:radial-gradient(ellipse at 50% 20%,#15152f 0%,var(--dark) 70%) fixed;color:#fff;overflow-x:hidden;animation:pageIn .6s ease both;transition:opacity .3s ease}
+body.leaving{opacity:0}
+@keyframes pageIn{from{opacity:0}}
+a{color:inherit}
+.grad{background:linear-gradient(90deg,var(--primary),#fff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.accent{color:var(--primary)}
+
+/* Космос */
+#space{position:fixed;inset:0;width:100%;height:100%;z-index:-2}
+#planets{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.pl{position:absolute;will-change:transform}
+.pl i{display:block;position:relative;border-radius:50%;animation:bob var(--d,10s) ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-20px) rotate(5deg)}}
+.neptune{right:-70px;top:14%}
+.neptune i{width:230px;height:230px;background:radial-gradient(circle at 30% 30%,#8fdcff,#2f6bd6 45%,#0b1c52 100%);box-shadow:inset -35px -25px 60px rgba(0,0,20,.7),0 0 70px rgba(0,150,255,.25)}
+.neptune i::after{content:'';position:absolute;left:-28%;top:33%;width:156%;height:34%;border:7px solid rgba(170,220,255,.3);border-radius:50%;transform:rotate(-18deg)}
+.mars{left:5%;top:60%}
+.mars i{--d:8s;width:110px;height:110px;background:radial-gradient(circle at 30% 30%,#ffb28a,#d2502b 50%,#4a1408 100%);box-shadow:inset -18px -12px 35px rgba(0,0,0,.6),0 0 40px rgba(255,90,40,.2)}
+.moon{left:72%;top:76%}
+.moon i{--d:12s;width:80px;height:80px;background:radial-gradient(circle at 32% 30%,#fff,#b9bcc8 40%,#4a4d5c 100%);box-shadow:inset -14px -10px 25px rgba(0,0,0,.6),0 0 30px rgba(200,210,255,.15)}
+.moon i::before{content:'';position:absolute;left:28%;top:48%;width:20%;height:20%;border-radius:50%;background:rgba(60,62,80,.45);box-shadow:26px -18px 0 -2px rgba(60,62,80,.4),12px 18px 0 -4px rgba(60,62,80,.4)}
+
+/* Навигация */
+nav{display:flex;justify-content:space-between;align-items:center;height:var(--nav-h);padding:0 50px;position:fixed;inset:0 0 auto 0;z-index:100;backdrop-filter:blur(10px);background:rgba(10,10,26,.75);border-bottom:1px solid var(--glass-border)}
+.logo{font-size:24px;font-weight:800;letter-spacing:2px;text-decoration:none;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+nav ul{display:flex;list-style:none;gap:30px}
+nav ul a{color:#ccc;text-decoration:none;position:relative;transition:color .3s}
+nav ul a::after{content:'';position:absolute;left:0;bottom:-5px;width:0;height:2px;background:var(--primary);transition:width .3s}
+nav ul a:hover{color:#fff}nav ul a:hover::after{width:100%}
+.nav-right{display:flex;align-items:center;gap:14px}
+.nav-btn{padding:10px 25px;border-radius:30px;border:1px solid var(--primary);color:var(--primary);font-weight:600;text-decoration:none;white-space:nowrap;transition:.3s}
+.nav-btn:hover{background:var(--primary);color:var(--dark);box-shadow:0 0 20px rgba(0,210,255,.5)}
+.burger{display:none;width:44px;height:44px;background:none;border:1px solid var(--glass-border);border-radius:12px;cursor:pointer;position:relative}
+.burger span{position:absolute;left:11px;width:20px;height:2px;background:#fff;border-radius:2px;transition:.3s}
+.burger span:nth-child(1){top:14px}.burger span:nth-child(2){top:21px}.burger span:nth-child(3){top:28px}
+.burger.open span:nth-child(1){top:21px;transform:rotate(45deg)}
+.burger.open span:nth-child(2){opacity:0}
+.burger.open span:nth-child(3){top:21px;transform:rotate(-45deg)}
+
+.ticker-wrap{position:fixed;top:var(--nav-h);width:100%;overflow:hidden;background:rgba(0,210,255,.1);border-bottom:1px solid var(--glass-border);z-index:99;backdrop-filter:blur(5px)}
+.ticker{display:inline-block;white-space:nowrap;padding:10px 0;animation:ticker 30s linear infinite;color:var(--primary);font-weight:600;font-size:.9rem}
+@keyframes ticker{from{transform:translate3d(100%,0,0)}to{transform:translate3d(-100%,0,0)}}
+
+/* Главный экран */
+header{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:130px 20px 40px;position:relative}
+header h1{font-size:5rem;font-weight:800;line-height:1.1;margin-bottom:20px;animation:float 6s ease-in-out infinite}
+header h1+h1{animation-delay:-3s}
+@keyframes float{50%{transform:translateY(-12px)}}
+header p{font-size:1.2rem;color:#aaa;max-width:600px;margin-bottom:40px;animation:fadeUp 1s ease-out both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}}
+.cta-button{padding:18px 50px;font-size:1.2rem;font-weight:600;color:var(--dark);background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:50px;text-decoration:none;box-shadow:0 10px 30px rgba(0,210,255,.3);animation:fadeUp 1s ease-out .3s both;transition:transform .3s,box-shadow .3s}
+.cta-button:hover{transform:translateY(-5px) scale(1.05);box-shadow:0 15px 40px rgba(0,210,255,.6)}
+
+/* Секции */
+section{position:relative;padding:100px 20px;text-align:center}
+section h2{font-size:3rem;margin-bottom:50px}
+.features,.pricing{max-width:1200px;margin:0 auto}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px}
+.feature-item,.card,.q{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:20px}
+.feature-item{padding:40px 30px;transition:transform .3s,border-color .3s,box-shadow .3s}
+.feature-item:hover{transform:translateY(-10px);border-color:var(--primary);box-shadow:0 10px 30px rgba(0,210,255,.1)}
+.feature-icon{font-size:50px;margin-bottom:20px;animation:pulse 2.5s infinite}
+@keyframes pulse{50%{transform:scale(1.12)}}
+.feature-item h3{font-size:1.2rem;margin-bottom:15px;color:var(--primary)}
+.feature-item p{color:#aaa;font-size:.95rem;line-height:1.5}
+
+.pricing>p{color:#aaa;margin:-35px 0 60px;font-size:1.1rem}
+.pricing-cards{display:flex;justify-content:center;gap:30px;flex-wrap:wrap}
+.card{border-radius:24px;padding:40px 30px;width:320px;position:relative;overflow:hidden;transition:transform .4s cubic-bezier(.175,.885,.32,1.275),border-color .3s,box-shadow .4s}
+.card:hover{transform:translateY(-15px) scale(1.02);border-color:var(--primary);box-shadow:0 25px 50px rgba(0,210,255,.2)}
+.card.popular{border-color:var(--primary);box-shadow:0 0 30px rgba(0,210,255,.1)}
+.card.popular::after{content:'ПОПУЛЯРНЫЙ';position:absolute;top:20px;right:-34px;background:linear-gradient(90deg,var(--primary),var(--secondary));color:var(--dark);padding:5px 40px;font-size:.8rem;font-weight:800;transform:rotate(45deg)}
+.card h3{font-size:1.5rem;margin-bottom:20px}
+.price{font-size:3rem;font-weight:800;margin-bottom:30px;color:var(--primary)}
+.price span{font-size:1rem;color:#aaa;font-weight:400}
+.card ul{list-style:none;text-align:left;margin-bottom:40px}
+.card li{margin-bottom:15px;color:#ccc;display:flex;gap:10px}
+.card li::before{content:'✓';color:var(--primary);font-weight:700}
+.btn{display:block;padding:15px;border-radius:12px;background:rgba(255,255,255,.1);font-weight:600;text-decoration:none;transition:.3s}
+.btn:hover,.card.popular .btn{background:linear-gradient(90deg,var(--primary),var(--secondary));color:var(--dark)}
+
+/* FAQ */
+.faq{max-width:820px;margin:0 auto}
+.q{border-radius:16px;margin-bottom:14px;text-align:left;transition:border-color .3s}
+.q.open{border-color:var(--primary)}
+.q button{width:100%;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;background:none;border:0;color:#fff;font-size:1rem;font-weight:600;text-align:left;cursor:pointer;border-radius:16px}
+.q button::after{content:'+';color:var(--primary);font-size:1.6rem;line-height:1;transition:transform .3s}
+.q.open button::after{transform:rotate(45deg)}
+.q button:focus-visible{outline:2px solid var(--primary)}
+.a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.q.open .a{grid-template-rows:1fr}
+.a>div{overflow:hidden;min-height:0}
+.a p{padding:0 24px 20px;color:#aaa;line-height:1.6}
+
+.support{background:rgba(0,210,255,.05);border-block:1px solid var(--glass-border)}
+.support h2{font-size:2.5rem;margin-bottom:20px}
+.support p{color:#aaa;margin-bottom:30px;font-size:1.1rem}
+.support-links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap}
+.support-btn{padding:15px 30px;border-radius:12px;border:1px solid var(--primary);text-decoration:none;font-weight:600;transition:.3s;overflow-wrap:anywhere}
+.support-btn:hover{background:var(--primary);color:var(--dark);box-shadow:0 0 20px rgba(0,210,255,.4)}
+
+footer{padding:40px 20px;text-align:center;color:#777;font-size:.9rem;background:rgba(10,10,26,.9);position:relative}
+.foot-links{margin-bottom:12px}
+.foot-links a{color:#999;margin:0 10px;text-decoration:none}
+.foot-links a:hover{color:var(--primary)}
+
+/* Условия */
+.doc{max-width:860px;margin:0 auto;padding:calc(var(--nav-h) + 50px) 20px 60px;position:relative}
+.doc h1{font-size:2.6rem;margin-bottom:8px}
+.doc .date{color:#888;margin-bottom:30px}
+.doc article{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:20px;padding:34px 36px}
+.doc h2{font-size:1.2rem;color:var(--primary);margin:26px 0 10px}
+.doc h2:first-child{margin-top:0}
+.doc p,.doc li{color:#bbb;line-height:1.7}
+.doc ul{padding-left:22px;margin-top:6px}
+
+/* Появление */
+.reveal{opacity:0;transform:translateY(50px);transition:opacity .8s ease,transform .8s ease;transition-delay:calc(var(--i,0)*.12s)}
+.reveal.active{opacity:1;transform:none}
+.card.reveal.active,.feature-item.reveal.active{transition:transform .4s,border-color .3s,box-shadow .4s,opacity .8s}
+
+/* Мобильные */
+@media(max-width:768px){
+ :root{--nav-h:64px}
+ nav{padding:0 16px}
+ .logo{font-size:20px}
+ .nav-btn{padding:8px 16px;font-size:.85rem}
+ .burger{display:block}
+ nav ul{position:fixed;top:var(--nav-h);left:0;right:0;flex-direction:column;gap:0;background:rgba(10,10,26,.97);border-bottom:1px solid var(--glass-border);transform:translateY(-130%);opacity:0;pointer-events:none;transition:transform .4s ease,opacity .3s}
+ nav ul.open{transform:none;opacity:1;pointer-events:auto}
+ nav ul a{display:block;padding:18px 24px;font-size:1.1rem}
+ nav ul a::after{display:none}
+ .ticker{font-size:.8rem;padding:8px 0}
+ header{padding-top:120px}
+ header h1{font-size:2.7rem}
+ header p{font-size:1rem}
+ .cta-button{padding:16px 34px;font-size:1.05rem}
+ section{padding:70px 16px}
+ section h2,.support h2{font-size:2rem;margin-bottom:34px}
+ .pricing>p{margin:-20px 0 40px;font-size:1rem}
+ .card{width:100%;max-width:380px}
+ .price{font-size:2.5rem}
+ .support-links{flex-direction:column}
+ .doc h1{font-size:2rem}
+ .doc article{padding:24px 20px}
+ .neptune{transform:scale(.6);transform-origin:top right;opacity:.7}
+ .mars,.moon{opacity:.6}
+ .moon{left:78%}
+}
+@media(max-width:380px){header h1{font-size:2.2rem}.nav-btn{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}html{scroll-behavior:auto}}
+
+#terms-view{position:fixed;inset:0;z-index:90;overflow-y:auto;background:rgba(10,10,26,.93);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transform:translateY(24px);transition:opacity .4s,transform .4s,visibility .4s}
+#terms-view.show{opacity:1;visibility:visible;transform:none}
+.back{text-align:center;margin-top:24px}.back a{text-decoration:none;font-weight:600}
+</style>
+</head>
+<body id="top">
+
+<canvas id="space"></canvas>
+<div id="planets" aria-hidden="true">
+  <div class="pl neptune" data-s=".10"><i></i></div>
+  <div class="pl mars" data-s=".25"><i></i></div>
+  <div class="pl moon" data-s=".40"><i></i></div>
+</div>
+
+<nav>
+  <a class="logo" href="#top">NeptunVPN</a>
+  <ul id="menu">
+    <li><a href="#features">Возможности</a></li>
+    <li><a href="#pricing">Тарифы</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#support">Поддержка</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="nav-btn">Войти в бота</a>
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker">🚀 NeptunVPN: Скорость света и защита космоса! • 🌌 Покупка подписки доступна только через Telegram-бота • 🔒 Военное шифрование AES-256 • 💎 Серверы в 100+ странах • ⚡ Подключайся прямо сейчас!</div>
+</div>
+
+<header>
+  <h1>Скорость <span class="grad">Света</span>.</h1>
+  <h1>Защита <span class="grad">Космоса</span>.</h1>
+  <p>NeptunVPN — это твой личный телепорт в безопасный и свободный интернет. Без границ, без ограничений, без слежки.</p>
+  <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="cta-button">Купить подписку в Telegram</a>
+</header>
+
+<section class="features reveal" id="features">
+  <h2>Почему <span class="accent">NeptunVPN</span>?</h2>
+  <div class="features-grid">
+    <div class="feature-item"><div class="feature-icon">⚡</div><h3>Скорость без границ</h3><p>Наши серверы работают на 10 Гбит/с. Смотри 4K видео и качай файлы без задержек.</p></div>
+    <div class="feature-item"><div class="feature-icon">🛡️</div><h3>Максимальная защита</h3><p>Шифрование AES-256. Твой интернет-трафик защищен надежнее, чем в банке.</p></div>
+    <div class="feature-item"><div class="feature-icon">🌍</div><h3>Серверы по всему миру</h3><p>Более 100 стран. Открывай контент, который скрыт от тебя, в один клик.</p></div>
+    <div class="feature-item"><div class="feature-icon">👻</div><h3>Политика No-Logs</h3><p>Мы не храним логи. Твои действия в сети остаются только твоим делом.</p></div>
+  </div>
+</section>
+
+<section class="pricing reveal" id="pricing">
+  <h2>Выбери свою <span class="accent">орбиту</span></h2>
+  <p>Оплата и активация подписки происходят в нашем Telegram-боте.</p>
+  <div class="pricing-cards">
+    <div class="card">
+      <h3>Луна</h3>
+      <div class="price">199 ₽<span>/мес</span></div>
+      <ul><li>Скорость до 100 Мбит/с</li><li>5 устройств</li><li>Серверы в 10 странах</li><li>Защита от утечек</li></ul>
+      <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="btn">Купить в боте</a>
+    </div>
+    <div class="card popular">
+      <h3>Марс</h3>
+      <div class="price">399 ₽<span>/мес</span></div>
+      <ul><li>Безлимитная скорость</li><li>10 устройств</li><li>Серверы в 50 странах</li><li>Обход блокировок</li><li>Выделенный IP</li></ul>
+      <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="btn">Купить в боте</a>
+    </div>
+    <div class="card">
+      <h3>Нептун</h3>
+      <div class="price">699 ₽<span>/мес</span></div>
+      <ul><li>Максимальный приоритет</li><li>Неограниченно устройств</li><li>Серверы в 100+ странах</li><li>Двойное шифрование</li><li>Поддержка 24/7</li></ul>
+      <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="btn">Купить в боте</a>
+    </div>
+  </div>
+</section>
+
+<section class="reveal" id="faq">
+  <h2>Частые <span class="accent">вопросы</span></h2>
+  <div class="faq">
+    <div class="q open"><button aria-expanded="true">Как подключиться к NeptunVPN?</button><div class="a"><div><p>Откройте Telegram-бота, выберите тариф и получите ключ доступа. Затем установите приложение Happ (или другой клиент с поддержкой VLESS), вставьте ключ из буфера обмена — и нажмите «Подключить».</p></div></div></div>
+    <div class="q"><button aria-expanded="false">Как оплатить подписку?</button><div class="a"><div><p>Оплата и активация происходят в Telegram-боте: выберите тариф, способ оплаты и следуйте подсказкам. После оплаты ключ придёт в чат с ботом, его всегда можно посмотреть в разделе «Мой профиль».</p></div></div></div>
+    <div class="q"><button aria-expanded="false">Сколько устройств можно подключить?</button><div class="a"><div><p>Зависит от тарифа: «Луна» — 5 устройств, «Марс» — 10 устройств, «Нептун» — без ограничений по количеству.</p></div></div></div>
+    <div class="q"><button aria-expanded="false">Как продлить подписку?</button><div class="a"><div><p>Зайдите в бота и снова нажмите «Купить подписку». Срок действия указан в разделе «Мой профиль».</p></div></div></div>
+    <div class="q"><button aria-expanded="false">VPN не подключается — что делать?</button><div class="a"><div><p>Проверьте, что подписка активна и ключ скопирован полностью. Обновите приложение, переключитесь между Wi-Fi и мобильной сетью, попробуйте другой сервер. Если не помогло — напишите в поддержку, мы разберёмся.</p></div></div></div>
+    <div class="q"><button aria-expanded="false">Можно ли вернуть деньги?</button><div class="a"><div><p>Если сервис не работает по нашей вине и проблему не удалось решить, напишите в поддержку. Подробности — в <a href="#terms" class="accent">условиях использования</a>.</p></div></div></div>
+  </div>
+</section>
+
+<section class="support reveal" id="support">
+  <h2>Нужна помощь?</h2>
+  <p>Наша команда всегда на связи. Пиши нам, если возникли вопросы!</p>
+  <div class="support-links">
+    <a href="mailto:lornix61@gmail.com" class="support-btn">✉️ Написать на почту: lornix61@gmail.com</a>
+    <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="support-btn">💬 Написать в Telegram</a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-links"><a href="#faq">FAQ</a><a href="#terms">Условия использования</a></div>
+  <p>&copy; 2026 NeptunVPN. Сделано с любовью к космосу и приватности.</p>
+</footer>
+
+<div id="terms-view">
+<div class="doc">
+  <h1><span class="grad">Условия использования</span></h1>
+  <p class="date">Последнее обновление: 23.11.2026</p>
+  <article>
+    <h2>1. Общие положения</h2>
+    <p>Настоящие условия регулируют использование сервиса NeptunVPN (далее — «Сервис»). Покупая подписку или используя ключ доступа, вы подтверждаете, что прочитали и принимаете эти условия. Если вы не согласны с ними, не пользуйтесь Сервисом.</p>
+
+    <h2>2. Описание Сервиса</h2>
+    <p>Сервис предоставляет ключи доступа для подключения к VPN-серверам по протоколу VLESS. Покупка, активация и продление подписки выполняются через Telegram-бота @NeptunVpnHelperBot.</p>
+
+    <h2>3. Подписка и оплата</h2>
+    <ul>
+      <li>Подписка действует 30 дней с момента активации.</li>
+      <li>Тариф определяет лимиты (количество устройств и др.), указанные на сайте и в боте.</li>
+      <li>Цены указаны в рублях и могут изменяться. Изменение цены не влияет на уже оплаченный период.</li>
+    </ul>
+
+    <h2>4. Возврат средств</h2>
+    <p>Если Сервис не работает по нашей вине и проблему не удалось решить, обратитесь в поддержку. Решение о возврате принимается по каждому обращению индивидуально.</p>
+
+    <h2>5. Правила использования</h2>
+    <p>Запрещается:</p>
+    <ul>
+      <li>использовать Сервис для противоправной деятельности;</li>
+      <li>рассылать спам, проводить DDoS-атаки, сканировать порты, взламывать чужие системы;</li>
+      <li>нарушать авторские права и права третьих лиц;</li>
+      <li>передавать или перепродавать ключ третьим лицам, превышать лимит устройств по тарифу;</li>
+      <li>пытаться нарушить работу Сервиса или обойти его ограничения.</li>
+    </ul>
+
+    <h2>6. Доступность Сервиса</h2>
+    <p>Мы стараемся обеспечивать стабильную работу, но не гарантируем бесперебойность и конкретную скорость соединения: она зависит от вашего провайдера, региона и нагрузки. Возможны технические работы.</p>
+
+    <h2>7. Какие данные мы храним</h2>
+    <p>Для работы подписки бот хранит ваш Telegram ID, имя пользователя, тариф, дату окончания подписки и выданный ключ. Эти данные нужны для работы Сервиса и поддержки, мы не продаём их третьим лицам.</p>
+
+    <h2>8. Приостановка и блокировка</h2>
+    <p>При нарушении этих условий мы можем приостановить или заблокировать ключ без возврата средств.</p>
+
+    <h2>9. Ответственность</h2>
+    <p>Сервис предоставляется «как есть». Вы самостоятельно отвечаете за свои действия и соблюдение законов страны, в которой находитесь. Мы не несём ответственности за косвенные убытки, возникшие при использовании Сервиса.</p>
+
+    <h2>10. Изменение условий</h2>
+    <p>Мы можем обновлять эти условия. Актуальная версия всегда размещена на этой странице, дата последнего обновления указана вверху.</p>
+
+    <h2>11. Контакты</h2>
+    <p>Почта: <a href="mailto:lornix61@gmail.com" class="accent">lornix61@gmail.com</a><br>Telegram-бот: <a href="https://t.me/NeptunVpnHelperBot" target="_blank" rel="noopener" class="accent">@NeptunVpnHelperBot</a></p>
+  </article>
+<p class="back"><a class="accent" href="#top">← Вернуться на сайт</a></p></div>
+</div>
+
+<script>
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mobile = matchMedia('(max-width: 768px)').matches;
+
+  // --- Страница условий (поверх сайта) ---
+  const tv = $('#terms-view');
+  const route = () => {
+    const on = location.hash === '#terms';
+    tv.classList.toggle('show', on);
+    document.body.style.overflow = on ? 'hidden' : '';
+    if (on) tv.scrollTop = 0;
+  };
+  addEventListener('hashchange', route);
+  route();
 
   // --- Бургер-меню ---
   const burger = $('.burger'), menu = $('nav ul');
@@ -108,3 +437,6 @@
   }
   frame();
 })();
+</script>
+</body>
+</html>
